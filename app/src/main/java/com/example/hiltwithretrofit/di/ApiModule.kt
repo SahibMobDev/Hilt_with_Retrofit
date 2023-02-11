@@ -1,6 +1,7 @@
 package com.example.hiltwithretrofit.di
 
 import com.example.hiltwithretrofit.BuildConfig
+import com.example.hiltwithretrofit.api.ApiServices
 import com.example.hiltwithretrofit.utils.Constants.API_KEY
 import com.example.hiltwithretrofit.utils.Constants.BASE_URL
 import com.example.hiltwithretrofit.utils.Constants.NETWORK_TIMEOUT
@@ -13,6 +14,8 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -63,4 +66,14 @@ object ApiModule {
             .Builder()
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(baseUrl: String, gson: Gson, client: OkHttpClient) : ApiServices =
+        Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+            .create(ApiServices::class.java)
 }
