@@ -1,7 +1,8 @@
-package com.example.hiltwithretrofit
+package com.example.hiltwithretrofit.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.hiltwithretrofit.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
