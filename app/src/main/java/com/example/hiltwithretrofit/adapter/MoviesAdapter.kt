@@ -30,6 +30,7 @@ class MoviesAdapter @Inject constructor() : RecyclerView.Adapter<MoviesAdapter.V
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.set(differ.currentList[position])
+        holder.setIsRecyclable(false)
     }
 
 
@@ -46,8 +47,18 @@ class MoviesAdapter @Inject constructor() : RecyclerView.Adapter<MoviesAdapter.V
                     placeholder(R.drawable.poster_placeholder)
                     scale(Scale.FILL)
                 }
+                root.setOnClickListener {
+                    onItemClickListener?.let {
+                        it(item)
+                    }
+                }
             }
         }
+    }
+
+    private var onItemClickListener: ((MoviesListResponse.Result) -> Unit)? = null
+    fun setOnItemClickListener(listener: (MoviesListResponse.Result) -> Unit) {
+        onItemClickListener = listener
     }
 
     private val diffUtilCallback = object : DiffUtil.ItemCallback<MoviesListResponse.Result>() {
@@ -67,5 +78,5 @@ class MoviesAdapter @Inject constructor() : RecyclerView.Adapter<MoviesAdapter.V
 
     }
 
-    private val differ = AsyncListDiffer(this, diffUtilCallback)
+     val differ = AsyncListDiffer(this, diffUtilCallback)
 }

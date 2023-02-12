@@ -34,8 +34,8 @@ object ApiModule {
     @Singleton
     fun provideGson() : Gson = GsonBuilder().setLenient().create()
 
-    @Provides
     @Singleton
+    @Provides
     fun provideOKHttpClient() = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
@@ -60,6 +60,7 @@ object ApiModule {
             .Builder()
             .addInterceptor(requestInterceptor)
             .addInterceptor(loggingInterceptor)
+            .build()
 
     } else {
         OkHttpClient
