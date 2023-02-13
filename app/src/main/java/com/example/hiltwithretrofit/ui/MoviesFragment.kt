@@ -6,14 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.hiltwithretrofit.R
+import com.example.hiltwithretrofit.adapter.LoadMoreAdapter
 import com.example.hiltwithretrofit.adapter.MoviesAdapter
 import com.example.hiltwithretrofit.databinding.FragmentMoviesBinding
 import com.example.hiltwithretrofit.repository.ApiRepository
 import com.example.hiltwithretrofit.response.MoviesListResponse
+import com.example.viewmodel.MoviesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,10 +29,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MoviesFragment : Fragment() {
 
-    private lateinit var binding: FragmentMoviesBinding
+    private var _binding: FragmentMoviesBinding? = null
+    private val binding: FragmentMoviesBinding
+    get() = _binding!!
 
-    @Inject
-    lateinit var apiRepository: ApiRepository
+    private val viewModel: MoviesViewModel by viewModels()
 
     @Inject
     lateinit var moviesAdapter: MoviesAdapter
@@ -36,53 +43,47 @@ class MoviesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentMoviesBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentMoviesBinding.inflate(layoutInflater, container, false)
         return binding.root
-    }
+     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
-            prgBarMovies.visibility = View.VISIBLE
-            apiRepository.getPopularMoviesList(1).enqueue(object : Callback<MoviesListResponse> {
-                override fun onResponse(
-                    call: Call<MoviesListResponse>,
-                    response: Response<MoviesListResponse>
-                ) {
-                    prgBarMovies.visibility = View.GONE
-                    when(response.code()) {
-                        200 -> {
-                            response.body().let { itBody ->
-                                if (itBody?.results!!.isNotEmpty()) {
-                                    moviesAdapter.differ.submitList(itBody.results)
-                                }
-
-                                rlMovies.apply {
-                                    layoutManager = LinearLayoutManager(requireContext())
-                                    adapter = moviesAdapter
-                                }
-                                moviesAdapter.setOnItemClickListener {
-                                    val directions = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it.id)
-                                    findNavController().navigate(directions)
-                                }
-                            }
-                        }
-                        401 -> {
-                            Toast.makeText(requireContext(), "Invalid API key: You must be granted a valid key.", Toast.LENGTH_SHORT).show()
-                        }
-                        404 -> {
-                            Toast.makeText(requireContext(), "The resource you requested could not be found.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+            lifecycleScope.launchWhenCreated {
+                viewModel.movieList.collect {
+                    moviesAdapter.submitData(it)
                 }
+            }
 
-                override fun onFailure(call: Call<MoviesListResponse>, t: Throwable) {
-                    prgBarMovies.visibility = View.GONE
-                    Toast.makeText(requireContext(), "onFailure", Toast.LENGTH_SHORT).show()
+            rlMovies.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = moviesAdapter
+            }
+
+            lifecycleScope.launchWhenCreated {
+                moviesAdapter.loadStateFlow.collect {
+                    val state = it.refresh
+                    prgBarMovies.isVisible = state is LoadState.Loading
                 }
+            }
 
-            })
+            rlMovies.adapter = moviesAdapter.withLoadStateFooter(
+                LoadMoreAdapter {
+                    moviesAdapter.retry()
+                }
+            )
+
+            moviesAdapter.setOnItemClickListener {
+                val direction = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it.id)
+                findNavController().navigate(direction)
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
