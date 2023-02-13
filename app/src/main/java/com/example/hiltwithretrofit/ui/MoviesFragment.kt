@@ -19,7 +19,7 @@ import com.example.hiltwithretrofit.adapter.MoviesAdapter
 import com.example.hiltwithretrofit.databinding.FragmentMoviesBinding
 import com.example.hiltwithretrofit.repository.ApiRepository
 import com.example.hiltwithretrofit.response.MoviesListResponse
-import com.example.viewmodel.MoviesViewModel
+import com.example.hiltwithretrofit.viewmodel.MoviesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback

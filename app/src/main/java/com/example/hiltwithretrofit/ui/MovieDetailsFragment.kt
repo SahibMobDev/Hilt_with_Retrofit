@@ -15,7 +15,7 @@ import com.example.hiltwithretrofit.databinding.FragmentMovieDetailsBinding
 import com.example.hiltwithretrofit.repository.ApiRepository
 import com.example.hiltwithretrofit.response.MovieDetailResponse
 import com.example.hiltwithretrofit.utils.Constants.POSTER_BASEURL
-import com.example.viewmodel.MoviesViewModel
+import com.example.hiltwithretrofit.viewmodel.MoviesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback

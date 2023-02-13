@@ -1,4 +1,4 @@
-package com.example.viewmodel
+package com.example.hiltwithretrofit.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
