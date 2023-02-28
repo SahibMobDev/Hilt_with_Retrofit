@@ -2,7 +2,6 @@ package com.example.hiltwithretrofit.api
 
 import com.example.hiltwithretrofit.response.MovieDetailResponse
 import com.example.hiltwithretrofit.response.MoviesListResponse
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

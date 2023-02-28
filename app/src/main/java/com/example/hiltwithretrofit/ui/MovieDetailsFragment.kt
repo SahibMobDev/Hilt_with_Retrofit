@@ -1,10 +1,12 @@
 package com.example.hiltwithretrofit.ui
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.MediaController
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -75,6 +77,7 @@ class MovieDetailsFragment : Fragment() {
                 tvMovieBudget.text = response.budget.toString()
                 tvMovieRevenue.text = response.revenue.toString()
                 tvMovieOverview.text = response.overview
+
             }
 
             viewModel.loading.observe(viewLifecycleOwner) {
